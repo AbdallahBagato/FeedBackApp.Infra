@@ -1,0 +1,63 @@
+---
+- name: Prepare Ec2 as Agent
+  hosts: all
+  become: yes
+  tasks:
+  - name: 'Create myagent dir'
+    file:
+      path: ~/myagent
+      state: directory
+  - name: Change to the directory and run a command
+    shell: |
+      cd myagent
+      wget  https://vstsagentpackage.azureedge.net/agent/4.254.0/vsts-agent-linux-x64-4.254.0.tar.gz
+      tar zxvf vsts-agent-linux-x64-4.254.0.tar.gz
+  
+  - name: Update apt package list
+    yum:
+      update_cache: yes
+
+  - name: Install Python 3.9, python3.9-venv, and python3.9-dev
+    yum:
+      name:
+        - python3.9
+        - python3.9-venv
+        - python3.9-dev
+      state: present
+
+  - name: Prepare Docker Repo
+    shell: |
+      sudo dnf -y install dnf-plugins-core
+      sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  
+  - name: Install Docker
+    yum:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+      state: present
+  
+  - name: Start and enable Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+    
+  - name: Download kubectl
+    command: >
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    args:
+      chdir: /tmp
+
+  - name: Install kubectl
+    command: >
+      sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+
+  - name: Remove the downloaded kubectl binary
+    file:
+      path: /tmp/kubectl
+      state: absent
