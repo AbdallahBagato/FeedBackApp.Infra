@@ -33,10 +33,16 @@ resource "aws_security_group" "eks_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = "Security_Group_A"
+  }
 }
 
 resource "aws_internet_gateway" "IGW" {
   vpc_id = aws_vpc.Agent.id
+  tags = {
+    Name = "IGW"
+  }
 }
 
 resource "aws_route_table" "RouteTable" {
@@ -45,6 +51,9 @@ resource "aws_route_table" "RouteTable" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.IGW.id
+  }
+  tags = {
+    Name = "RouteTable"
   }
 }
 
