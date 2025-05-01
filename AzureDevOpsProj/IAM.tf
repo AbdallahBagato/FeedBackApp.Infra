@@ -1,5 +1,6 @@
 ##################################
 ## The Cluster Roless
+/*
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eksClusterRole"
 
@@ -49,4 +50,10 @@ resource "aws_iam_role_policy_attachment" "node_cni_policy" {
 resource "aws_iam_role_policy_attachment" "node_ecr_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+*/
+
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
 }

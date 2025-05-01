@@ -4,7 +4,7 @@ resource "aws_key_pair" "my_key" {
 }
 
 resource "aws_instance" "AzureAgent" {
-  ami           = "ami-0c15e602d3d6c6c4a"  # Example Amazon Linux 2 AMI
+  ami           = "ami-084568db4383264d4"  # Example Amazon Linux 2 AMI
   instance_type = "t2.micro"
   key_name = aws_key_pair.my_key.key_name
   
@@ -16,6 +16,6 @@ resource "aws_instance" "AzureAgent" {
     Name = "AzureAgent"
   }
   provisioner "local-exec" {
-    command = "echo ${self.public_ip } ansible_user=ec2-user ansible_ssh_private_key_file=/home/abdallah/.ssh/my-key-pair > ~/Project/Agent.inv "
+    command = "echo ${self.public_ip } ansible_user=ubuntu ansible_ssh_private_key_file=/home/abdallah/.ssh/my-key-pair > ~/Project/Agent.inv "
   }
 }
