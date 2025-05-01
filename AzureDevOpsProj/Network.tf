@@ -10,6 +10,7 @@ resource "aws_subnet" "Zone1" {
   vpc_id     = aws_vpc.Agent.id
   cidr_block = "10.10.1.0/24"
   availability_zone = "us-east-1a"
+  map_public_ip_on_launch = true 
   tags = {
     Name = "Public_Agent"
   }
@@ -19,6 +20,7 @@ resource "aws_subnet" "Zone2" {
   vpc_id     = aws_vpc.Agent.id
   cidr_block = "10.10.2.0/24"
   availability_zone = "us-east-1b"
+  map_public_ip_on_launch = true 
   tags = {
     Name = "Public_Agent"
   }
@@ -26,8 +28,9 @@ resource "aws_subnet" "Zone2" {
 
 resource "aws_subnet" "Zone3" {
   vpc_id     = aws_vpc.Agent.id
-  cidr_block = "10.10.2.0/24"
+  cidr_block = "10.10.3.0/24"
   availability_zone = "us-east-1c"
+   map_public_ip_on_launch = true 
   tags = {
     Name = "Public_Agent"
   }
@@ -47,9 +50,23 @@ resource "aws_security_group" "eks_sg" {
   }
 
   ingress {
-    from_port   = 10250 
-    to_port     = 10250 
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1025
+    to_port     = 65535 
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -69,16 +86,16 @@ resource "aws_route_table" "RouteTable" {
 
 # Associate the route table with the subnets
 resource "aws_route_table_association" "az1" {
-  subnet_id      = aws_subnet.az1.id
+  subnet_id      = aws_subnet.Zone1.id
   route_table_id = aws_route_table.RouteTable.id
 }
 
 resource "aws_route_table_association" "az2" {
-  subnet_id      = aws_subnet.az2.id
+  subnet_id      = aws_subnet.Zone2.id
   route_table_id = aws_route_table.RouteTable.id
 }
 
 resource "aws_route_table_association" "az3" {
-  subnet_id      = aws_subnet.az3.id
+  subnet_id      = aws_subnet.Zone3.id
   route_table_id = aws_route_table.RouteTable.id
 }
